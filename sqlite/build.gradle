@@ -1,0 +1,64 @@
+apply plugin: 'com.android.library'
+
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        consumerProguardFiles 'proguard-a.pro','proguard-b.pro'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.orhanobut:logger:1.15'
+}
+
+
+apply plugin: 'maven'
+ext {
+    GITHUB_REPO_PATH = "E:\\android\\xywb\\resop"
+    PUBLISH_GROUP_ID = 'com.wb.xy.lib.sqlite'
+    PUBLISH_ARTIFACT_ID = 'WBXYSqlite'
+    PUBLISH_VERSION = '1.0.1'
+}
+/*
+* 1.0.1             Sqlite数据库
+* */
+uploadArchives {
+    repositories.mavenDeployer {
+        def deployPath = file(project.GITHUB_REPO_PATH)
+        repository(url: "file://${deployPath.absolutePath}")
+        pom.project {
+            groupId project.PUBLISH_GROUP_ID
+            artifactId project.PUBLISH_ARTIFACT_ID
+            version project.PUBLISH_VERSION
+        }
+    }
+}
+
+// 源代码一起打包(不需要打包源代码的不要添加这几行)
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+artifacts {
+    archives androidSourcesJar
+}
+
